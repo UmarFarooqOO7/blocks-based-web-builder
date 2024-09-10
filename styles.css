@@ -1,0 +1,90 @@
+#block-builder {
+    display: flex;
+    height: 100vh;
+}
+
+#left-sidebar,
+#right-sidebar {
+    width: 20%;
+    background-color: #f4f4f4;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+#center-canvas {
+    flex: 1;
+    padding: 10px;
+    background-color: #ffffff;
+    overflow-y: auto;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+.block-item {
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.block-item img {
+    width: 100%;
+    border: 1px solid #ccc;
+}
+
+#right-sidebar form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Apply a border to the selected element */
+.canvas-block .selected {
+    outline: 1px solid blue;
+    /* Solid blue border for the selected element */
+}
+
+/* Set the row height to the viewport */
+.row-height {
+    height: 100vh;
+}
+
+/* Set up the columns with a 100% height, body color, and overflow scroll */
+.left {
+    background-color: #f8f9fa;
+    /* Light gray for left sidebar */
+    height: 100%;
+    overflow-y: scroll;
+    padding: 20px;
+}
+
+.right {
+    background-color: #f8f9fa;
+    /* Light gray for right sidebar */
+    height: 100%;
+    overflow-y: scroll;
+    padding: 20px;
+}
+
+.mid {
+    background-color: #ffffff;
+    /* White for center canvas */
+    height: 100%;
+    overflow-y: scroll;
+    padding: 20px;
+    border-left: 1px solid #dee2e6;
+    /* Light border for separation */
+    border-right: 1px solid #dee2e6;
+}
+
+/* Remove the scrollbar from Chrome, Safari, Edge and IE */
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+* {
+    -ms-overflow-style: none !important;
+}
+
+#right-sidebar {
+    display: none;
+    /* Hidden by default */
+}
