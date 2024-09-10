@@ -83,8 +83,3 @@
 * {
     -ms-overflow-style: none !important;
 }
-
-#right-sidebar {
-    display: none;
-    /* Hidden by default */
-}

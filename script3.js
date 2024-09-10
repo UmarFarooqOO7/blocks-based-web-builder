@@ -66,12 +66,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Generalized function to create and append settings form
-    function createSettingField(type, label, value, onChange, defaultValue) {
+    function createSettingField(type, label, value, onChange, defaultValue, tab = 'basic') {
         const fieldWrapper = document.createElement('div');
-        fieldWrapper.className = 'setting-field';
+        fieldWrapper.className = 'form-group'; // Use Bootstrap's form group class
 
         const fieldLabel = document.createElement('label');
         fieldLabel.textContent = label;
+        fieldLabel.className = 'form-label'; // Bootstrap label class
         fieldWrapper.appendChild(fieldLabel);
 
         let inputField;
@@ -79,6 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
         switch (type) {
             case 'select':
                 inputField = document.createElement('select');
+                inputField.className = 'form-control'; // Bootstrap select class
                 value.forEach(option => {
                     const opt = document.createElement('option');
                     opt.value = option.value;
@@ -90,16 +92,19 @@ document.addEventListener("DOMContentLoaded", () => {
             case 'color':
                 inputField = document.createElement('input');
                 inputField.type = 'color';
+                inputField.className = 'form-control'; // Bootstrap color input class
                 inputField.value = value || '#ffffff';
                 break;
             case 'file':
                 inputField = document.createElement('input');
                 inputField.type = 'file';
+                inputField.className = 'form-control-file'; // Bootstrap file input class
                 inputField.addEventListener('change', (e) => handleFileUpload(e, element));
                 break;
             default:
                 inputField = document.createElement('input');
                 inputField.type = type;
+                inputField.className = 'form-control'; // Bootstrap text input class
                 inputField.value = value || '';
                 break;
         }
@@ -107,13 +112,21 @@ document.addEventListener("DOMContentLoaded", () => {
         inputField.addEventListener('input', onChange);
 
         fieldWrapper.appendChild(inputField);
-        rightSidebar.appendChild(fieldWrapper);
+
+        // Append the field to the selected tab's content area
+        document.getElementById(tab).appendChild(fieldWrapper);
     }
+
+
 
     // Function to load settings form in the right sidebar based on the element type
     function loadSettings(element) {
-        // Clear previous settings form
-        rightSidebar.innerHTML = '';
+        // Show the right sidebar
+        rightSidebar.style.display = 'block';
+
+        // Clear previous settings form in both tabs
+        document.getElementById('basic').innerHTML = '';
+        document.getElementById('advanced').innerHTML = '';
 
         const styles = window.getComputedStyle(element);
         const tagName = element.tagName.toLowerCase();
@@ -123,77 +136,75 @@ document.addEventListener("DOMContentLoaded", () => {
             img: ['img']
         };
 
+        // text 
         if (elementSettings.text.includes(tagName)) {
             createSettingField('text', 'Text Content', element.innerText, (e) => {
                 element.innerText = e.target.value;
-            });
+            }, undefined, 'basic');
             createSettingField('number', 'Font Size', parseInt(styles.fontSize), (e) => {
                 element.style.fontSize = `${e.target.value}px`;
-            });
+            }, undefined, 'basic');
             createSettingField('color', 'Text Color', rgbToHex(styles.color), (e) => {
                 element.style.color = e.target.value;
-            });
+            }, undefined, 'basic');
         }
 
+        // img
         if (elementSettings.img.includes(tagName)) {
             createSettingField('text', 'Image Source', element.src, (e) => {
                 element.src = e.target.value;
-            });
+            }, undefined, 'basic');
             createSettingField('number', 'Width', element.width, (e) => {
                 element.style.width = `${e.target.value}px`;
-            });
+            }, undefined, 'basic');
             createSettingField('number', 'Height', element.height, (e) => {
                 element.style.height = `${e.target.value}px`;
-            });
+            }, undefined, 'basic');
         }
 
         // Shared settings for all elements (like margin and padding)
-        createBorderSettings(element);
+        createBorderSettings(element, styles);
 
-        createPaddingMarginSettings(element);
+        createPaddingMarginSettings(element, styles);
     }
 
     // Function to create padding and margin settings
-    function createPaddingMarginSettings(element) {
-        const styles = window.getComputedStyle(element);
+    function createPaddingMarginSettings(element, styles) {
 
         createSettingField('color', 'Background Color', rgbToHex(styles.backgroundColor), (e) => {
             element.style.backgroundColor = e.target.value;
-        });
+        }, 'basic');
 
         // Padding settings
         ['Top', 'Right', 'Bottom', 'Left'].forEach(position => {
             createSettingField('number', `Padding ${position}`, parseInt(styles[`padding${position}`]), (e) => {
                 element.style[`padding${position}`] = `${e.target.value}px`;
-            });
+            }, undefined, 'advanced');
         });
 
         // Margin settings
         ['Top', 'Right', 'Bottom', 'Left'].forEach(position => {
             createSettingField('number', `Margin ${position}`, parseInt(styles[`margin${position}`]), (e) => {
                 element.style[`margin${position}`] = `${e.target.value}px`;
-            });
+            }, undefined, 'advanced');
         });
     }
 
-    function createBorderSettings(element) {
-        const styles = window.getComputedStyle(element);
-
-        // Border Width
+    function createBorderSettings(element, styles) {
+        // border width
         createSettingField('number', 'Border Width', parseInt(styles.borderWidth), (e) => {
             element.style.borderWidth = `${e.target.value}px`;
-        });
+        }, undefined, 'advanced');
 
-        // Border Style
-        const borderStyle = styles.borderStyle || 'none'; // Default to 'none' if not defined
+        // border style
         createSettingField('select', 'Border Style', ['none', 'solid', 'dashed', 'dotted'].map(style => ({ value: style, label: style })), (e) => {
             element.style.borderStyle = e.target.value;
-        }, borderStyle);
+        }, styles.borderStyle, 'advanced');
 
-        // Border Color
+        // border color
         createSettingField('color', 'Border Color', rgbToHex(styles.borderColor), (e) => {
             element.style.borderColor = e.target.value;
-        });
+        }, undefined, 'advanced');
     }
 
     // Helper function to convert rgb color to hex
